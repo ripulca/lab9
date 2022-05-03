@@ -10,27 +10,39 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ApiResource(
+    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'user:list']]],
+    itemOperations: ['get' => ['normalization_context' => ['groups' => 'user:item']]],
+    order: ['name' => 'DESC'],
+    paginationEnabled: true,
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['user:list', 'user:item'])]
     private $id;
 
     /**
      * @Assert\Email
      */
     #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Groups(['user:list', 'user:item'])]
     private $email;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(['user:list', 'user:item'])]
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
+    #[Groups(['user:list', 'user:item'])]
     private $password;
 
     /**
@@ -38,20 +50,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\Length(min=3)
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['user:list', 'user:item'])]
     private $name;
 
     /**
      * @Assert\Regex("/^(\+)?((\d{2,3}) ?\d|\d)(([ -]?\d)|( ?(\d{2,3}) ?)){5,12}\d$/")
      */
     #[ORM\Column(type: 'string', length: 13, nullable: true)]
+    #[Groups(['user:list', 'user:item'])]
     private $phone;
 
-    #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: Post::class, orphanRemoval: true)]
-    private $posts;
+    #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: user::class, orphanRemoval: true)]
+    private $users;
 
     public function __construct()
     {
-        $this->posts = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -149,29 +163,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Post>
+     * @return Collection<int, user>
      */
-    public function getPosts(): Collection
+    public function getusers(): Collection
     {
-        return $this->posts;
+        return $this->users;
     }
 
-    public function addPost(Post $post): self
+    public function adduser(user $user): self
     {
-        if (!$this->posts->contains($post)) {
-            $this->posts[] = $post;
-            $post->setUserId($this);
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->setUserId($this);
         }
 
         return $this;
     }
 
-    public function removePost(Post $post): self
+    public function removeuser(user $user): self
     {
-        if ($this->posts->removeElement($post)) {
+        if ($this->users->removeElement($user)) {
             // set the owning side to null (unless already changed)
-            if ($post->getUserId() === $this) {
-                $post->setUserId(null);
+            if ($user->getUserId() === $this) {
+                $user->setUserId(null);
             }
         }
 

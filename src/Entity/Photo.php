@@ -5,13 +5,22 @@ namespace App\Entity;
 use App\Repository\PhotoRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PhotoRepository::class)]
+#[ApiResource(
+    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'photo:list']]],
+    itemOperations: ['get' => ['normalization_context' => ['groups' => 'photo:item']]],
+    order: ['name' => 'DESC'],
+    paginationEnabled: true,
+)]
 class Photo
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['photo:list', 'photo:item'])]
     private $id;
 
     #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'photos')]
@@ -23,6 +32,7 @@ class Photo
      * @Assert\Length(min=3)
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['photo:list', 'photo:item'])]
     private $name;
 
     /**
@@ -30,6 +40,7 @@ class Photo
      * @Assert\Length(min=10)
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['photo:list', 'photo:item'])]
     private $path;
 
     /**
@@ -37,6 +48,7 @@ class Photo
      * @Assert\Length(min=3)
      */
     #[ORM\Column(type: 'string', length: 5)]
+    #[Groups(['photo:list', 'photo:item'])]
     private $format;
 
     public function getId(): ?int
