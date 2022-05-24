@@ -1,16 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Photo{% endblock %}
+{% block title %}Photo {{ photo.id }}{% endblock %}
 
 {% block body %}
-    <h1>Photo</h1>
 
     <table class="table">
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ photo.id }}</td>
-            </tr>
             <tr>
                 <th>Name</th>
                 <td>{{ photo.name }}</td>

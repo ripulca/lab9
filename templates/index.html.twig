@@ -8,7 +8,7 @@
             <div class="row">
                 {% for photo in photos %}
                         <div class="col-md-5 p-lg-2 mx-auto">
-                            <a href="{{ path('app_photo_show', {'id': photo.id}) }}">
+                            <a href="{{ path('app_photo_show', {'id': photo.id}) }}" class=".post">
                                 <img src="{{photo.path}}" height="250">
                             </a>
                             <p>{{ photo.name }}</p>

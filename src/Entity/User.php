@@ -49,7 +49,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotBlank
      * @Assert\Length(min=3)
      */
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
     #[Groups(['user:list', 'user:item'])]
     private $name;
 
@@ -62,6 +62,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: user::class, orphanRemoval: true)]
     private $users;
+
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private $apiToken;
 
     public function __construct()
     {
@@ -188,6 +191,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $user->setUserId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(string $apiToken): self
+    {
+        $this->apiToken = $apiToken;
 
         return $this;
     }

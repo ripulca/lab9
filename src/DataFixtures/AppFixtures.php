@@ -19,6 +19,7 @@ class AppFixtures extends Fixture
             $user->setEmail('user_'.$i.'@example.com');
             $user->setPassword(password_hash('pwd____'.$i, PASSWORD_DEFAULT));
             $user->setPhone('+89001239'.$i);
+            $user->setApiToken('userToken_'.$i);
             if($i<20){
                 $user->setRoles(['ROLE_USER']);
             }
